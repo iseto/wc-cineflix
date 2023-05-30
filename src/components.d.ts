@@ -22,6 +22,8 @@ export namespace Components {
     }
     interface WcMovieFinder {
     }
+    interface WcPopularMovie {
+    }
 }
 declare global {
     interface HTMLMyComponentElement extends Components.MyComponent, HTMLStencilElement {
@@ -36,9 +38,16 @@ declare global {
         prototype: HTMLWcMovieFinderElement;
         new (): HTMLWcMovieFinderElement;
     };
+    interface HTMLWcPopularMovieElement extends Components.WcPopularMovie, HTMLStencilElement {
+    }
+    var HTMLWcPopularMovieElement: {
+        prototype: HTMLWcPopularMovieElement;
+        new (): HTMLWcPopularMovieElement;
+    };
     interface HTMLElementTagNameMap {
         "my-component": HTMLMyComponentElement;
         "wc-movie-finder": HTMLWcMovieFinderElement;
+        "wc-popular-movie": HTMLWcPopularMovieElement;
     }
 }
 declare namespace LocalJSX {
@@ -58,9 +67,12 @@ declare namespace LocalJSX {
     }
     interface WcMovieFinder {
     }
+    interface WcPopularMovie {
+    }
     interface IntrinsicElements {
         "my-component": MyComponent;
         "wc-movie-finder": WcMovieFinder;
+        "wc-popular-movie": WcPopularMovie;
     }
 }
 export { LocalJSX as JSX };
@@ -69,6 +81,7 @@ declare module "@stencil/core" {
         interface IntrinsicElements {
             "my-component": LocalJSX.MyComponent & JSXBase.HTMLAttributes<HTMLMyComponentElement>;
             "wc-movie-finder": LocalJSX.WcMovieFinder & JSXBase.HTMLAttributes<HTMLWcMovieFinderElement>;
+            "wc-popular-movie": LocalJSX.WcPopularMovie & JSXBase.HTMLAttributes<HTMLWcPopularMovieElement>;
         }
     }
 }
