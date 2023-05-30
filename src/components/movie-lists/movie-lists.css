@@ -1,0 +1,24 @@
+.movie-lists_header {
+  text-align: center;
+}
+
+ul {
+  list-style: none;
+  padding-inline-start: 0.5rem;
+  padding-inline-end: 0.5rem;
+}
+
+.movie-lists-wrapper {
+  display: flex;
+  background-color: white;
+}
+
+.movie-lists-image,
+.movie-lists-info {
+  padding: 1rem;
+}
+
+.movie-lists-image {
+  width: 110px;
+  height: 165px;
+}

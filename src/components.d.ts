@@ -22,7 +22,8 @@ export namespace Components {
     }
     interface WcMovieFinder {
     }
-    interface WcPopularMovie {
+    interface WcMovieLists {
+        "movieListType": string;
     }
 }
 declare global {
@@ -38,16 +39,16 @@ declare global {
         prototype: HTMLWcMovieFinderElement;
         new (): HTMLWcMovieFinderElement;
     };
-    interface HTMLWcPopularMovieElement extends Components.WcPopularMovie, HTMLStencilElement {
+    interface HTMLWcMovieListsElement extends Components.WcMovieLists, HTMLStencilElement {
     }
-    var HTMLWcPopularMovieElement: {
-        prototype: HTMLWcPopularMovieElement;
-        new (): HTMLWcPopularMovieElement;
+    var HTMLWcMovieListsElement: {
+        prototype: HTMLWcMovieListsElement;
+        new (): HTMLWcMovieListsElement;
     };
     interface HTMLElementTagNameMap {
         "my-component": HTMLMyComponentElement;
         "wc-movie-finder": HTMLWcMovieFinderElement;
-        "wc-popular-movie": HTMLWcPopularMovieElement;
+        "wc-movie-lists": HTMLWcMovieListsElement;
     }
 }
 declare namespace LocalJSX {
@@ -67,12 +68,13 @@ declare namespace LocalJSX {
     }
     interface WcMovieFinder {
     }
-    interface WcPopularMovie {
+    interface WcMovieLists {
+        "movieListType"?: string;
     }
     interface IntrinsicElements {
         "my-component": MyComponent;
         "wc-movie-finder": WcMovieFinder;
-        "wc-popular-movie": WcPopularMovie;
+        "wc-movie-lists": WcMovieLists;
     }
 }
 export { LocalJSX as JSX };
@@ -81,7 +83,7 @@ declare module "@stencil/core" {
         interface IntrinsicElements {
             "my-component": LocalJSX.MyComponent & JSXBase.HTMLAttributes<HTMLMyComponentElement>;
             "wc-movie-finder": LocalJSX.WcMovieFinder & JSXBase.HTMLAttributes<HTMLWcMovieFinderElement>;
-            "wc-popular-movie": LocalJSX.WcPopularMovie & JSXBase.HTMLAttributes<HTMLWcPopularMovieElement>;
+            "wc-movie-lists": LocalJSX.WcMovieLists & JSXBase.HTMLAttributes<HTMLWcMovieListsElement>;
         }
     }
 }
