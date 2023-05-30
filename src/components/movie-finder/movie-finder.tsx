@@ -16,10 +16,11 @@ export class MovieFinder {
       method: 'GET',
       headers: {
         accept: 'application/json',
+        Authorization: `${process.env.TMDB_AUTH}`,
       },
     };
 
-    fetch(`https://api.themoviedb.org/3/search/movie?query=${movieName}&include_adult=false&language=en-US&page=1`, options)
+    fetch(`${process.env.TMDB_BASE_URL}search/movie?query=${movieName}&include_adult=false&language=en-US&page=1`, options)
       .then(response => response.json())
       .then(response => console.log(response))
       .catch(err => console.error(err));
