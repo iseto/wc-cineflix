@@ -1,5 +1,4 @@
 import { Component, State, h } from '@stencil/core';
-
 @Component({
   tag: 'wc-popular-movie',
   styleUrl: 'popular-movie.css',
@@ -18,10 +17,11 @@ export class PopularMovie {
       method: 'GET',
       headers: {
         accept: 'application/json',
+        Authorization: `${process.env.TMDB_AUTH}`,
       },
     };
 
-    fetch('https://api.themoviedb.org/3/movie/popular?language=en-US&page=1', options)
+    fetch(`${process.env.TMDB_BASE_URL}movie/popular?language=en-US&page=1`, options)
       .then(response => response.json())
       .then(parsedRes => {
         console.log(parsedRes['results']);
