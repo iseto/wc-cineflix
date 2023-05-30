@@ -1,0 +1,9 @@
+.movie-finder {
+  display: flex;
+  justify-content: center;
+}
+
+.movie-finder-input {
+  font-size: 1.5rem;
+  height: 2rem;
+}
