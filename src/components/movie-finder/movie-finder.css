@@ -1,0 +1,15 @@
+.movie-finder {
+  display: flex;
+  justify-content: center;
+}
+
+.movie-finder-input {
+  width: 100%;
+  height: 46px;
+  line-height: 46px;
+  font-size: 1.1em;
+  color: rgba(0, 0, 0, 0.5);
+  border: none;
+  border-radius: 30px;
+  padding: 10px 20px;
+}

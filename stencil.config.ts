@@ -1,7 +1,8 @@
 import { Config } from '@stencil/core';
 
 export const config: Config = {
-  namespace: 'wc-cineflix',
+  namespace: 'cineflix',
+  globalStyle: 'src/global/global.css',
   outputTargets: [
     {
       type: 'dist',
