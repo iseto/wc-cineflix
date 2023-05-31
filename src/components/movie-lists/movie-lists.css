@@ -1,5 +1,7 @@
 .movie-lists_header {
-  text-align: center;
+  text-align: left;
+  padding-left: 8px;
+  color: white;
 }
 
 ul {
