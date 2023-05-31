@@ -44,11 +44,18 @@ export class MovieLists {
       .catch(err => console.error(err));
   }
 
+  toTitleCase(text) {
+    return text.replace(/\w\S*/g, function (txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+  }
+
   render() {
     const IMAGE_BASE_URL = `https://image.tmdb.org/t/p/w220_and_h330_face`;
-    const MOVIE_LIST_TITLE = this.movieListType.replace('_', ' ').toUpperCase();
+    const MOVIE_LIST_TITLE = this.toTitleCase(this.movieListType.replace('_', ' '));
+
     return [
-      <h3 class="movie-lists_header">{MOVIE_LIST_TITLE}</h3>,
+      <h3 class="movie-lists_header">{MOVIE_LIST_TITLE + ' Movies'}</h3>,
 
       <ul>
         {this.movieListsResults.map(result => (
