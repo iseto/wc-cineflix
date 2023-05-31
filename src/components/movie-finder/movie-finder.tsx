@@ -12,7 +12,7 @@ export class MovieFinder {
     title: string;
     image_url: string;
     release: string;
-  };
+  }[] = [];
   @State() movieUserInput: string;
   @State() movieInputValid = false;
 
@@ -36,6 +36,7 @@ export class MovieFinder {
     fetch(`${process.env.TMDB_BASE_URL}search/movie?query=${movieName}&include_adult=false&language=en-US&page=1`, options)
       .then(response => response.json())
       .then(parsedRes => {
+        // console.log(parsedRes['results']);
         this.fetchedMovies = parsedRes['results'].map(match => {
           return {
             title: match['original_title'],
@@ -43,12 +44,36 @@ export class MovieFinder {
             release: match['release_date'],
           };
         });
-        console.log(this.fetchedMovies);
+        // console.log(this.fetchedMovies);
       })
       .catch(err => console.error(err));
   }
 
   render() {
+    const IMAGE_BASE_URL = `https://image.tmdb.org/t/p/w220_and_h330_face`;
+
+    let searchResults = [
+      <p class="movie-finder-result-title">Showing {this.fetchedMovies.length} results</p>,
+      <ul>
+        {this.fetchedMovies.map(result => (
+          <li class="movie-finder-wrapper">
+            {result.image_url !== null ? (
+              <a class="movie-finder_image-wrapper">
+                <img src={IMAGE_BASE_URL + result.image_url} class="movie-finder-image"></img>
+              </a>
+            ) : (
+              <p class="movie-finder-no-image">No poster found</p>
+            )}
+            <div class="movie-finder-info">
+              <p class="movie-finder_movie-title">
+                <strong>{result.title}</strong>
+              </p>
+              {result.release !== '' ? <p>{result.release}</p> : <p>No release info</p>}
+            </div>
+          </li>
+        ))}
+      </ul>,
+    ];
     return [
       <form onSubmit={this.onFindMovies.bind(this)}>
         <div class="movie-finder">
@@ -66,6 +91,7 @@ export class MovieFinder {
           </button>
         </div>
       </form>,
+      <div>{searchResults}</div>,
     ];
   }
 }
