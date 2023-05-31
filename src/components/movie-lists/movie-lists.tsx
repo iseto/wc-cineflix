@@ -24,8 +24,6 @@ export class MovieLists {
       },
     };
 
-    console.log(this.movieListType);
-
     fetch(`${process.env.TMDB_BASE_URL}movie/${this.movieListType}?language=en-US&page=1`, options)
       .then(response => response.json())
       .then(parsedRes => {

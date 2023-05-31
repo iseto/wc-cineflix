@@ -44,7 +44,7 @@ export class MovieFinder {
             release: match['release_date'],
           };
         });
-        // console.log(this.fetchedMovies);
+        console.log(this.fetchedMovies);
       })
       .catch(err => console.error(err));
   }
@@ -53,7 +53,9 @@ export class MovieFinder {
     const IMAGE_BASE_URL = `https://image.tmdb.org/t/p/w220_and_h330_face`;
 
     let searchResults = [
-      <p class="movie-finder-result-title">Showing {this.fetchedMovies.length} results</p>,
+      <p class="movie-finder-result-title">
+        Showing {this.fetchedMovies.length} results for {this.movieUserInput}
+      </p>,
       <ul>
         {this.fetchedMovies.map(result => (
           <li class="movie-finder-wrapper">
