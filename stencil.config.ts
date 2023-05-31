@@ -17,6 +17,7 @@ export const config: Config = {
     },
     {
       type: 'www',
+      baseUrl: 'https://iseto.github.io/wc-cineflix/',
       serviceWorker: null, // disable service workers
     },
   ],
