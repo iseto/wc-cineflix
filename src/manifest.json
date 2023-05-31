@@ -1,0 +1,6 @@
+{
+  "name": "iseto - Cineflix",
+  "short_name": "Cineflix",
+  "start_url": "/",
+  "display": "standalone"
+}

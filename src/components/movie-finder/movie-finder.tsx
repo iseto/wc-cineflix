@@ -1,5 +1,4 @@
 import { Component, State, h } from '@stencil/core';
-
 @Component({
   tag: 'wc-movie-finder',
   styleUrl: 'movie-finder.css',

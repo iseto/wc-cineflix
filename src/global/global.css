@@ -1,9 +1,9 @@
 body {
-  background-color: #e50914;
+  background-color: black;
 }
 
 .header {
-  color: white;
+  color: #e50914;
   text-transform: uppercase;
   text-align: center;
   font-size: 5rem;
