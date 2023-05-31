@@ -1,4 +1,6 @@
 import { Component, Prop, State, h } from '@stencil/core';
+import { TMDB_AUTH } from '../../global';
+import { TMDB_BASE_URL } from '../../global';
 @Component({
   tag: 'wc-movie-lists',
   styleUrl: 'movie-lists.css',
@@ -20,11 +22,11 @@ export class MovieLists {
       method: 'GET',
       headers: {
         accept: 'application/json',
-        Authorization: `${process.env.TMDB_AUTH}`,
+        Authorization: `${TMDB_AUTH}`,
       },
     };
 
-    fetch(`${process.env.TMDB_BASE_URL}movie/${this.movieListType}?language=en-US&page=1`, options)
+    fetch(`${TMDB_BASE_URL}movie/${this.movieListType}?language=en-US&page=1`, options)
       .then(response => response.json())
       .then(parsedRes => {
         // console.log(parsedRes['results']);
