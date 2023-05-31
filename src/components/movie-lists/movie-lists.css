@@ -1,18 +1,21 @@
 .movie-lists_header {
   text-align: left;
-  padding-left: 8px;
   color: white;
+  margin: 2rem;
 }
 
 ul {
   list-style: none;
-  padding-inline-start: 0.5rem;
-  padding-inline-end: 0.5rem;
+  padding-inline-start: 0;
+  padding-inline-end: 0;
+  margin: 2rem;
 }
 
 .movie-lists-wrapper {
   display: flex;
   background-color: white;
+  border-radius: 1rem;
+  margin-bottom: 2rem;
 }
 
 .movie-lists-image,

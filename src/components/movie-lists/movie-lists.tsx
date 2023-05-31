@@ -24,12 +24,10 @@ export class MovieLists {
       },
     };
 
-    console.log(this.movieListType);
-
     fetch(`${process.env.TMDB_BASE_URL}movie/${this.movieListType}?language=en-US&page=1`, options)
       .then(response => response.json())
       .then(parsedRes => {
-        console.log(parsedRes['results']);
+        // console.log(parsedRes['results']);
         this.movieListsResults = parsedRes['results'].slice(0, 5).map(match => {
           return {
             original_title: match['original_title'],
@@ -39,7 +37,7 @@ export class MovieLists {
             rating: match['vote_average'],
           };
         });
-        console.log(this.movieListsResults);
+        // console.log(this.movieListsResults);
       })
       .catch(err => console.error(err));
   }

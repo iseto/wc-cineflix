@@ -1,10 +1,11 @@
 .movie-finder {
   display: flex;
   justify-content: center;
+  margin: 2rem;
 }
 
 .movie-finder-input {
-  width: 85%;
+  width: 100%;
   height: 46px;
   line-height: 46px;
   font-size: 1.1em;
@@ -12,4 +13,50 @@
   border: none;
   border-radius: 30px;
   padding: 10px 20px;
+}
+
+.movie-finder-result-title {
+  color: white;
+  font-weight: bold;
+  margin: 2rem;
+}
+
+ul {
+  list-style: none;
+  padding-inline-start: 0.5rem;
+  padding-inline-end: 0.5rem;
+  display: flex;
+  flex-direction: row;
+  overflow: scroll;
+  background-color: white;
+  margin: 2rem;
+  border-radius: 1rem;
+}
+
+.movie-finder-wrapper {
+  padding: 0.5rem;
+  margin-bottom: 8px;
+}
+
+.movie-finder-info {
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+}
+
+.movie-finder_movie-title {
+  height: 2.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.movie-finder-image,
+.movie-finder-no-image {
+  width: 110px;
+  height: 165px;
+}
+
+.movie-finder-no-image {
+  margin: 0 0 0.5rem;
+  outline: 1px solid gray;
 }
