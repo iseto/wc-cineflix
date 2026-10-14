@@ -1,0 +1,137 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+* {
+  box-sizing: border-box;
+}
+button {
+  font: inherit;
+  cursor: pointer;
+}
+.artwork {
+  position: relative;
+  aspect-ratio: 2/3;
+  background: #202321;
+  border-radius: 9px;
+  overflow: hidden;
+}
+.poster {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: white;
+  text-align: left;
+}
+.poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.45s;
+  position: relative;
+  z-index: 1;
+}
+.fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  font-size: 22px;
+  background: linear-gradient(145deg, #3c4237, #151917);
+}
+.poster:hover img {
+  transform: scale(1.045);
+}
+.view {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 40px 18px 18px;
+  background: linear-gradient(transparent, #000c);
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.2s;
+  font-size: 13px;
+}
+.poster:hover .view,
+.poster:focus-visible .view {
+  opacity: 1;
+}
+.rating {
+  position: absolute;
+  z-index: 3;
+  top: 12px;
+  left: 12px;
+  font-size: 11px;
+  background: #111b;
+  backdrop-filter: blur(8px);
+  color: white;
+  padding: 6px 8px;
+  border: 1px solid #ffffff20;
+  border-radius: 5px;
+}
+.rating span {
+  color: #d4ed90;
+  margin-right: 3px;
+}
+.save {
+  position: absolute;
+  top: 11px;
+  right: 11px;
+  z-index: 3;
+  border: 1px solid #ffffff40;
+  background: #1119;
+  color: #fff;
+  border-radius: 50%;
+  height: 30px;
+  width: 30px;
+  display: grid;
+  place-items: center;
+  font-size: 21px;
+  line-height: 1;
+  backdrop-filter: blur(8px);
+}
+.save:hover,
+.save.saved {
+  background: #d4ed90;
+  color: #182014;
+  border-color: #d4ed90;
+}
+.title {
+  border: 0;
+  background: none;
+  color: var(--text, #f0f1eb);
+  padding: 15px 0 0;
+  text-align: left;
+  font-weight: 550;
+  font-size: 14px;
+  line-height: 1.45;
+  display: block;
+}
+.title:hover {
+  color: #d4ed90;
+}
+p {
+  font-size: 11px;
+  color: var(--muted, #8d948e);
+  margin: 7px 0 0;
+}
+p span {
+  margin: 0 8px;
+}
+:focus-visible {
+  outline: 2px solid #d4ed90;
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+
+@media (max-width: 700px) { .save { width: 40px; height: 40px; top: 8px; right: 8px; } }

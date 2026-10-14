@@ -1,6 +1,8 @@
 {
-  "name": "iseto - Cineflix",
+  "name": "Cineflix — Film discovery by Ignatius Seto",
   "short_name": "Cineflix",
   "start_url": "/",
-  "display": "standalone"
+  "display": "standalone",
+  "background_color": "#101310",
+  "theme_color": "#101310"
 }

@@ -1,18 +1,16 @@
 {
   "name": "wc-cineflix",
   "version": "0.0.1",
-  "description": "Cineflix",
+  "description": "A curated cinema experience showcasing Stencil and native web components",
   "main": "dist/index.cjs.js",
   "module": "dist/index.js",
-  "es2015": "dist/esm/index.mjs",
-  "es2017": "dist/esm/index.mjs",
   "types": "dist/types/index.d.ts",
   "collection": "dist/collection/collection-manifest.json",
   "collection:main": "dist/collection/index.js",
-  "unpkg": "dist/wc-cineflix/wc-cineflix.esm.js",
+  "unpkg": "dist/cineflix/cineflix.esm.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ionic-team/stencil-component-starter.git"
+    "url": "https://github.com/iseto/wc-cineflix.git"
   },
   "files": [
     "dist/",
@@ -21,20 +19,18 @@
   "scripts": {
     "build": "stencil build",
     "start": "stencil build --dev --watch --serve",
-    "test": "stencil test --spec --e2e",
-    "test.watch": "stencil test --spec --e2e --watchAll",
+    "test": "npm run build && node --test tests/browser.test.mjs",
     "generate": "stencil generate"
   },
   "dependencies": {
-    "@stencil/core": "^3.0.0"
+    "@stencil/core": "^4.45.2"
   },
   "devDependencies": {
-    "@types/jest": "^27.5.2",
-    "@types/node": "^16.18.34",
-    "jest": "^27.5.1",
-    "jest-cli": "^27.5.1",
-    "puppeteer": "^19.5.2",
-    "rollup-plugin-dotenv": "^0.5.0"
+    "@types/node": "^26.6.5",
+    "puppeteer": "^25.13.0"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.12.0"
+  }
 }

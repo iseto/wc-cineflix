@@ -5,85 +5,81 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { Movie } from "./data/movies";
+export { Movie } from "./data/movies";
 export namespace Components {
-    interface MyComponent {
-        /**
-          * The first name
-         */
-        "first": string;
-        /**
-          * The last name
-         */
-        "last": string;
-        /**
-          * The middle name
-         */
-        "middle": string;
+    interface CineflixApp {
     }
-    interface WcMovieFinder {
-    }
-    interface WcMovieLists {
-        "movieListType": string;
+    interface WcMovieCard {
+        "movie": Movie;
+        /**
+          * @default false
+         */
+        "saved": boolean;
     }
 }
+export interface WcMovieCardCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLWcMovieCardElement;
+}
 declare global {
-    interface HTMLMyComponentElement extends Components.MyComponent, HTMLStencilElement {
+    interface HTMLCineflixAppElement extends Components.CineflixApp, HTMLStencilElement {
     }
-    var HTMLMyComponentElement: {
-        prototype: HTMLMyComponentElement;
-        new (): HTMLMyComponentElement;
+    var HTMLCineflixAppElement: {
+        prototype: HTMLCineflixAppElement;
+        new (): HTMLCineflixAppElement;
     };
-    interface HTMLWcMovieFinderElement extends Components.WcMovieFinder, HTMLStencilElement {
+    interface HTMLWcMovieCardElementEventMap {
+        "movieSelected": number;
+        "watchlistToggle": number;
     }
-    var HTMLWcMovieFinderElement: {
-        prototype: HTMLWcMovieFinderElement;
-        new (): HTMLWcMovieFinderElement;
-    };
-    interface HTMLWcMovieListsElement extends Components.WcMovieLists, HTMLStencilElement {
+    interface HTMLWcMovieCardElement extends Components.WcMovieCard, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLWcMovieCardElementEventMap>(type: K, listener: (this: HTMLWcMovieCardElement, ev: WcMovieCardCustomEvent<HTMLWcMovieCardElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLWcMovieCardElementEventMap>(type: K, listener: (this: HTMLWcMovieCardElement, ev: WcMovieCardCustomEvent<HTMLWcMovieCardElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLWcMovieListsElement: {
-        prototype: HTMLWcMovieListsElement;
-        new (): HTMLWcMovieListsElement;
+    var HTMLWcMovieCardElement: {
+        prototype: HTMLWcMovieCardElement;
+        new (): HTMLWcMovieCardElement;
     };
     interface HTMLElementTagNameMap {
-        "my-component": HTMLMyComponentElement;
-        "wc-movie-finder": HTMLWcMovieFinderElement;
-        "wc-movie-lists": HTMLWcMovieListsElement;
+        "cineflix-app": HTMLCineflixAppElement;
+        "wc-movie-card": HTMLWcMovieCardElement;
     }
 }
 declare namespace LocalJSX {
-    interface MyComponent {
-        /**
-          * The first name
-         */
-        "first"?: string;
-        /**
-          * The last name
-         */
-        "last"?: string;
-        /**
-          * The middle name
-         */
-        "middle"?: string;
+    interface CineflixApp {
     }
-    interface WcMovieFinder {
+    interface WcMovieCard {
+        "movie"?: Movie;
+        "onMovieSelected"?: (event: WcMovieCardCustomEvent<number>) => void;
+        "onWatchlistToggle"?: (event: WcMovieCardCustomEvent<number>) => void;
+        /**
+          * @default false
+         */
+        "saved"?: boolean;
     }
-    interface WcMovieLists {
-        "movieListType"?: string;
+
+    interface WcMovieCardAttributes {
+        "saved": boolean;
     }
+
     interface IntrinsicElements {
-        "my-component": MyComponent;
-        "wc-movie-finder": WcMovieFinder;
-        "wc-movie-lists": WcMovieLists;
+        "cineflix-app": CineflixApp;
+        "wc-movie-card": Omit<WcMovieCard, keyof WcMovieCardAttributes> & { [K in keyof WcMovieCard & keyof WcMovieCardAttributes]?: WcMovieCard[K] } & { [K in keyof WcMovieCard & keyof WcMovieCardAttributes as `attr:${K}`]?: WcMovieCardAttributes[K] } & { [K in keyof WcMovieCard & keyof WcMovieCardAttributes as `prop:${K}`]?: WcMovieCard[K] };
     }
 }
 export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "my-component": LocalJSX.MyComponent & JSXBase.HTMLAttributes<HTMLMyComponentElement>;
-            "wc-movie-finder": LocalJSX.WcMovieFinder & JSXBase.HTMLAttributes<HTMLWcMovieFinderElement>;
-            "wc-movie-lists": LocalJSX.WcMovieLists & JSXBase.HTMLAttributes<HTMLWcMovieListsElement>;
+            "cineflix-app": LocalJSX.IntrinsicElements["cineflix-app"] & JSXBase.HTMLAttributes<HTMLCineflixAppElement>;
+            "wc-movie-card": LocalJSX.IntrinsicElements["wc-movie-card"] & JSXBase.HTMLAttributes<HTMLWcMovieCardElement>;
         }
     }
 }

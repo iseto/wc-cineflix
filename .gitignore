@@ -25,3 +25,20 @@ Thumbs.db
 UserInterfaceState.xcuserstate
 .env
 .vercel
+
+# Local credentials and environment overrides
+.env.*
+!.env.example
+!.env.sample
+.npmrc
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+service-account*.json
+
+# Local browser test artifacts
+coverage/
+test-results/
+playwright-report/

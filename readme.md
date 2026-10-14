@@ -1,15 +1,43 @@
-[![Built With Stencil](https://img.shields.io/badge/-Built%20With%20Stencil-16161d.svg?logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjIuMSwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA1MTIgNTEyOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI%2BCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI%2BCgkuc3Qwe2ZpbGw6I0ZGRkZGRjt9Cjwvc3R5bGU%2BCjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik00MjQuNywzNzMuOWMwLDM3LjYtNTUuMSw2OC42LTkyLjcsNjguNkgxODAuNGMtMzcuOSwwLTkyLjctMzAuNy05Mi43LTY4LjZ2LTMuNmgzMzYuOVYzNzMuOXoiLz4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTQyNC43LDI5Mi4xSDE4MC40Yy0zNy42LDAtOTIuNy0zMS05Mi43LTY4LjZ2LTMuNkgzMzJjMzcuNiwwLDkyLjcsMzEsOTIuNyw2OC42VjI5Mi4xeiIvPgo8cGF0aCBjbGFzcz0ic3QwIiBkPSJNNDI0LjcsMTQxLjdIODcuN3YtMy42YzAtMzcuNiw1NC44LTY4LjYsOTIuNy02OC42SDMzMmMzNy45LDAsOTIuNywzMC43LDkyLjcsNjguNlYxNDEuN3oiLz4KPC9zdmc%2BCg%3D%3D&colorA=16161d&style=flat-square)](https://stenciljs.com)
-
 # Cineflix
 
-This is a project for building a standalone Web Component using Stencil.
+A curated film discovery experience by Ignatius Seto. Built with Stencil, TypeScript, and native web components, with a responsive charcoal-and-sage interface.
 
-Visit the deployed version here: [Cineflix](https://wc-cineflix.vercel.app/)
+## Run locally
 
-This project was built using following tech stack:
+Requires Node.js 22 or newer.
 
-- [StencilJS](https://stenciljs.com/)
-- [TheMovieDB API](https://developer.themoviedb.org/reference/intro/getting-started)
-- Deployed on [Vercel](https://vercel.com/)
+```sh
+npm ci
+npm start
+```
 
-&copy; 2023 Ignatius Seto
+Stencil serves the development app at http://localhost:3333. Run `npm run build` for production assets in `www/`, and reusable components in `dist/` and `loader/`.
+
+## Features
+
+- Twelve curated films; search by title, director, or year.
+- Genre filters and sorting by rating, release year, or title.
+- Persistent watchlist using localStorage, with an in-memory fallback when storage is unavailable.
+- Film details in a native dialog, keyboard dismissal, visible focus states, and a `/` search shortcut.
+- Responsive layouts, reduced-motion support, lazy-loaded posters, and image fallbacks.
+- Interactive component inspector explaining the implementation.
+
+## Component architecture
+
+`<cineflix-app>` owns filters, the watchlist, and the details dialog. Each `<wc-movie-card>` uses Shadow DOM to encapsulate styles and emits typed, bubbling custom events (`movieSelected`, `watchlistToggle`). The app listens for these events and updates component properties through reactive state.
+
+Edit the collection in `src/data/movies.ts`. The catalog is bundled demo data, including fixed ratings; it is not a live movie feed. No API key or environment file is required. Posters and backdrop images load from TMDB; the font loads from Google Fonts with a system fallback. This independent demo is not endorsed or certified by TMDB.
+
+The obsolete Bootstrap interface, credential-dependent requests, starter components and utilities, dotenv plugin, and old Jest toolchain have been removed.
+
+## Validation
+
+```sh
+npm test
+```
+
+This creates a production build and runs real-browser integration tests for search, genre filtering, sorting, watchlist persistence, cross-component events, dialog behavior, keyboard access, and layout overflow at 320, 390, 768, and 1440 pixels.
+
+Tests use a locally installed Chrome on macOS/Linux, or `CHROME_PATH` if provided. If Chrome is unavailable, install Puppeteer's browser with `npx puppeteer browsers install chrome`.
+
+Source: https://github.com/iseto/wc-cineflix
