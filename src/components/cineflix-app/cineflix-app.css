@@ -909,3 +909,24 @@ dialog::backdrop {
     transition: none !important;
   }
 }
+
+.search-status {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.search-status:empty {
+  display: none;
+}
+.search-status:not(:empty) {
+  margin-bottom: 20px;
+}
+.load-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 25px;
+}
+button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}

@@ -30,12 +30,68 @@ test('film discovery, watchlist persistence, dialogs, keyboard and responsive la
   try {
     browser = await puppeteer.launch({ executablePath, headless: true, args: ['--no-sandbox'] });
     const page = await browser.newPage();
+    const arrival = {
+      id: -329865,
+      tmdbId: 329865,
+      title: 'Arrival',
+      year: 2016,
+      genre: 'Drama',
+      genres: ['Drama', 'Sci-fi'],
+      rating: 7.6,
+      duration: '',
+      director: '',
+      poster: '',
+      overview: 'A linguist makes first contact.',
+    };
+    await page.setRequestInterception(true);
+    page.on('request', request => {
+      const url = new URL(request.url());
+      if (url.pathname !== '/api/movies') return request.continue();
+      const query = url.searchParams.get('q');
+      const body = url.searchParams.has('id')
+        ? { movie: { ...arrival, director: 'Denis Villeneuve', duration: '1h 56m' } }
+        : query === 'Arrival'
+          ? { movies: url.searchParams.get('page') === '2' ? [{ ...arrival, id: -686, tmdbId: 686, title: 'Contact' }] : [arrival], totalPages: 2 }
+          : query === 'offline'
+            ? { error: 'Movie search could not be reached. Please try again.' }
+            : { movies: [], totalPages: 0 };
+      request.respond({ status: query === 'offline' ? 502 : 200, contentType: 'application/json', body: JSON.stringify(body) });
+    });
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.setViewport({ width: 1440, height: 1100 });
     await page.goto(`http://127.0.0.1:${server.address().port}`, { waitUntil: 'networkidle2' });
     await page.waitForSelector('cineflix-app >>> wc-movie-card');
     const app = () => page.evaluate(() => document.querySelector('cineflix-app').shadowRoot.querySelectorAll('wc-movie-card').length);
+    assert.equal(await app(), 12);
+    const setQuery = async value => {
+      await page.evaluate(value => {
+        const input = document.querySelector('cineflix-app').shadowRoot.querySelector('input');
+        input.value = value;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      }, value);
+    };
+    await setQuery('Arrival');
+    await page.waitForFunction(() => document.querySelector('cineflix-app').shadowRoot.querySelector('wc-movie-card')?.movie.title === 'Arrival');
+    await page.click('cineflix-app >>> .load-more button');
+    await page.waitForFunction(() => document.querySelector('cineflix-app').shadowRoot.querySelectorAll('wc-movie-card').length === 2);
+    await page.click('cineflix-app >>> wc-movie-card >>> .title');
+    await page.waitForFunction(() => document.querySelector('cineflix-app').shadowRoot.querySelector('.director')?.textContent.includes('Denis Villeneuve'));
+    await page.keyboard.press('Escape');
+    await page.click('cineflix-app >>> wc-movie-card >>> .save');
+    await page.waitForFunction(() => JSON.parse(localStorage.getItem('cineflix-watchlist')).includes(-329865));
+    await page.reload({ waitUntil: 'networkidle2' });
+    await page.click('cineflix-app >>> nav button:nth-child(2)');
+    await page.waitForFunction(() => document.querySelector('cineflix-app').shadowRoot.querySelector('wc-movie-card')?.movie.title === 'Arrival');
+    await page.click('cineflix-app >>> wc-movie-card >>> .save');
+    await page.click('cineflix-app >>> nav button:first-child');
+    await setQuery('offline');
+    await page.waitForFunction(() => document.querySelector('cineflix-app').shadowRoot.querySelector('.search-status').textContent.includes('could not be reached'));
+    await setQuery('no-such-title');
+    await page.waitForFunction(() => document.querySelector('cineflix-app').shadowRoot.querySelector('.empty')?.textContent.includes('No films'));
+    await setQuery('Arrival');
+    await setQuery('');
+    await page.waitForFunction(() => document.querySelector('cineflix-app').shadowRoot.querySelectorAll('wc-movie-card').length === 12);
     assert.equal(await app(), 12);
     await page.click('cineflix-app >>> input');
     await page.type('cineflix-app >>> input', 'Nolan');

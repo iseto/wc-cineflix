@@ -18,8 +18,8 @@
   ],
   "scripts": {
     "build": "stencil build",
-    "start": "stencil build --dev --watch --serve",
-    "test": "npm run build && node --test tests/browser.test.mjs",
+    "start": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/dev.mjs",
+    "test": "npm run build && node --test tests/*.test.mjs",
     "generate": "stencil generate"
   },
   "dependencies": {

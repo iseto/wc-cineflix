@@ -41,7 +41,7 @@ export class MovieCard {
           {movie.title}
         </button>
         <p>
-          {movie.year}
+          {movie.year || 'TBA'}
           <span>·</span>
           {movie.genre}
         </p>

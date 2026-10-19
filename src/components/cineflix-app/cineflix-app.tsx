@@ -10,6 +10,18 @@ export class CineflixApp {
   @State() sort = 'curated';
   @State() saved: number[] = [];
   @State() selected: Movie;
+  @State() remoteMovies: Movie[] = [];
+  @State() savedMovies: Movie[] = [];
+  @State() searching = false;
+  @State() searchError = '';
+  @State() searchPage = 1;
+  @State() totalPages = 0;
+  @State() detailsError = '';
+  private searchTimer: ReturnType<typeof setTimeout>;
+  private searchController: AbortController;
+  private detailController: AbortController;
+  private searchVersion = 0;
+  private requestedPage = 1;
   @State() inspector = false;
   @State() toast = '';
   private dialog: HTMLDialogElement;
@@ -18,14 +30,19 @@ export class CineflixApp {
   componentWillLoad() {
     try {
       const stored = JSON.parse(localStorage.getItem('cineflix-watchlist') || '[]');
-      if (Array.isArray(stored)) this.saved = stored.filter(id => movies.some(movie => movie.id === id));
+      const records = JSON.parse(localStorage.getItem('cineflix-saved-movies') || '[]');
+      if (Array.isArray(records))
+        this.savedMovies = records.filter(
+          movie => movie && Number.isInteger(movie.id) && movie.id < 0 && typeof movie.title === 'string' && typeof movie.poster === 'string' && typeof movie.overview === 'string',
+        );
+      if (Array.isArray(stored)) this.saved = stored.filter(id => [...movies, ...this.savedMovies].some(movie => movie.id === id));
     } catch {
       /* Private browsing can disable storage. */
     }
   }
   @Listen('movieSelected')
   onMovieSelected(event: CustomEvent<number>) {
-    const movie = movies.find(movie => movie.id === event.detail);
+    const movie = [...this.remoteMovies, ...movies, ...this.savedMovies].find(movie => movie.id === event.detail);
     if (movie) this.openMovie(movie);
   }
   @Listen('watchlistToggle')
@@ -43,11 +60,18 @@ export class CineflixApp {
   }
   disconnectedCallback() {
     clearTimeout(this.toastTimer);
+    clearTimeout(this.searchTimer);
+    this.searchController?.abort();
+    this.detailController?.abort();
   }
   private toggleSave(id: number) {
     const removing = this.saved.includes(id);
     this.saved = removing ? this.saved.filter(value => value !== id) : [...this.saved, id];
+    const movie = [...(this.selected ? [this.selected] : []), ...this.remoteMovies].find(movie => movie.id === id);
+    if (!removing && movie && id < 0) this.savedMovies = [...this.savedMovies.filter(item => item.id !== id), movie];
+    if (removing) this.savedMovies = this.savedMovies.filter(item => item.id !== id);
     try {
+      localStorage.setItem('cineflix-saved-movies', JSON.stringify(this.savedMovies));
       localStorage.setItem('cineflix-watchlist', JSON.stringify(this.saved));
     } catch {
       /* Watchlist still works for this visit. */
@@ -56,27 +80,83 @@ export class CineflixApp {
     clearTimeout(this.toastTimer);
     this.toastTimer = setTimeout(() => (this.toast = ''), 2400);
   }
-  private openMovie(movie: Movie) {
+  private async openMovie(movie: Movie) {
+    this.detailController?.abort();
     this.selected = movie;
+    this.detailsError = '';
     this.dialog.showModal();
+    if (!movie.tmdbId) return;
+    const controller = (this.detailController = new AbortController());
+    try {
+      const response = await fetch(`/api/movies?id=${movie.tmdbId}`, { signal: controller.signal });
+      if (!response.ok) throw new Error();
+      const data = await response.json();
+      if (!controller.signal.aborted && this.selected.id === movie.id) this.selected = data.movie;
+    } catch {
+      if (!controller.signal.aborted) this.detailsError = 'Additional film details could not be loaded.';
+    }
+  }
+  private updateQuery(value: string) {
+    this.query = value;
+    clearTimeout(this.searchTimer);
+    this.searchController?.abort();
+    this.searchVersion++;
+    this.remoteMovies = [];
+    this.searchPage = 1;
+    this.totalPages = 0;
+    this.searchError = '';
+    this.searching = false;
+    if (this.view !== 'watchlist' && value.trim()) {
+      this.searching = true;
+      this.searchTimer = setTimeout(() => this.searchMovies(), 300);
+    }
+  }
+  private async searchMovies(page = 1) {
+    this.requestedPage = page;
+    clearTimeout(this.searchTimer);
+    this.searchController?.abort();
+    const controller = (this.searchController = new AbortController());
+    const version = ++this.searchVersion;
+    this.searching = true;
+    this.searchError = '';
+    try {
+      const response = await fetch(`/api/movies?q=${encodeURIComponent(this.query.trim())}&page=${page}`, { signal: controller.signal });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Movie search is temporarily unavailable.');
+      if (!Array.isArray(data.movies)) throw new Error('Movie search returned an invalid response. Please try again.');
+      if (version !== this.searchVersion) return;
+      this.remoteMovies = page === 1 ? data.movies : [...this.remoteMovies, ...data.movies.filter(movie => !this.remoteMovies.some(existing => existing.id === movie.id))];
+      this.searchPage = page;
+      this.totalPages = data.totalPages;
+    } catch (error) {
+      if (version === this.searchVersion && !controller.signal.aborted)
+        this.searchError =
+          error instanceof Error && !(error instanceof TypeError) && !(error instanceof SyntaxError) ? error.message : 'Movie search could not be reached. Please try again.';
+    } finally {
+      if (version === this.searchVersion) this.searching = false;
+    }
   }
   private browse(view: string) {
     this.view = view;
     this.genre = 'All films';
-    this.query = '';
+    this.updateQuery('');
   }
   private resetFilters() {
-    this.query = '';
+    this.updateQuery('');
     this.genre = 'All films';
     this.sort = 'curated';
   }
   render() {
-    let visible = movies.filter(
+    const isCatalogSearch = this.view === 'discover' && !!this.query.trim();
+    const collection = this.view === 'watchlist' ? [...movies, ...this.savedMovies] : movies;
+    const localMatches = collection.filter(
       movie =>
         (this.view !== 'watchlist' || this.saved.includes(movie.id)) &&
-        (this.genre === 'All films' || movie.genre === this.genre) &&
+        (this.genre === 'All films' || movie.genre === this.genre || movie.genres?.includes(this.genre)) &&
         `${movie.title} ${movie.director} ${movie.year}`.toLowerCase().includes(this.query.toLowerCase().trim()),
     );
+    const remoteMatches = this.remoteMovies.filter(movie => this.genre === 'All films' || movie.genre === this.genre || movie.genres?.includes(this.genre));
+    let visible = isCatalogSearch ? [...localMatches, ...remoteMatches.filter(movie => !localMatches.some(local => local.id === movie.id))] : localMatches;
     if (this.sort === 'rating') visible = [...visible].sort((a, b) => b.rating - a.rating);
     if (this.sort === 'newest') visible = [...visible].sort((a, b) => b.year - a.year);
     if (this.sort === 'title') visible = [...visible].sort((a, b) => a.title.localeCompare(b.title));
@@ -163,7 +243,7 @@ export class CineflixApp {
               <div>
                 <span class="eyebrow">{this.view === 'watchlist' ? 'SAVED FOR A GOOD EVENING' : 'LESS NOISE. MORE GOOD STORIES.'}</span>
                 <h2>
-                  {this.view === 'watchlist' ? 'Your watchlist' : 'Find your next favorite'}
+                  {this.view === 'watchlist' ? 'Your watchlist' : isCatalogSearch ? 'Search results' : 'Find your next favorite'}
                   <span class="film-count">{visible.length} films</span>
                 </h2>
               </div>
@@ -174,10 +254,17 @@ export class CineflixApp {
                 </svg>
                 <input
                   type="search"
-                  aria-label="Search films or directors"
-                  placeholder="Search films, directors…"
+                  aria-label={this.view === 'watchlist' ? 'Search your watchlist' : 'Search movies'}
+                  placeholder={this.view === 'watchlist' ? 'Search your saved films…' : 'Search any movie…'}
                   value={this.query}
-                  onInput={event => (this.query = (event.target as HTMLInputElement).value)}
+                  onInput={event => this.updateQuery((event.target as HTMLInputElement).value)}
+                  onKeyDown={event => {
+                    if (event.key === 'Enter' && this.view === 'discover' && this.query.trim()) {
+                      event.preventDefault();
+                      this.searchMovies();
+                    }
+                  }}
+                  maxLength={200}
                 />
                 <kbd>/</kbd>
               </label>
@@ -208,12 +295,32 @@ export class CineflixApp {
                 </select>
               </label>
             </div>
-            <div class="film-grid">
+            <div class="search-status" role="status" aria-live="polite">
+              {this.searching && <p>Searching the movie catalog…</p>}
+              {this.searchError && (
+                <div>
+                  <p>
+                    {this.searchError} {visible.length > 0 && 'Showing matching films from the curated collection.'}
+                  </p>
+                  <button class="secondary" onClick={() => this.searchMovies(this.requestedPage)}>
+                    Try again
+                  </button>
+                </div>
+              )}
+            </div>
+            <div class="film-grid" aria-busy={this.searching ? 'true' : 'false'}>
               {visible.map(movie => (
                 <wc-movie-card key={movie.id} movie={movie} saved={this.saved.includes(movie.id)} />
               ))}
             </div>
-            {visible.length === 0 && (
+            {isCatalogSearch && this.searchPage < this.totalPages && (
+              <div class="load-more">
+                <button class="secondary" disabled={this.searching} onClick={() => this.searchMovies(this.searchPage + 1)}>
+                  {this.searching ? 'Loading…' : 'Load more films'}
+                </button>
+              </div>
+            )}
+            {visible.length === 0 && !this.searching && !this.searchError && (
               <div class="empty">
                 <span>✳</span>
                 <h3>{this.view === 'watchlist' && !this.saved.length ? 'Your next great evening starts here.' : 'No films in this frame.'}</h3>
@@ -268,6 +375,7 @@ export class CineflixApp {
         </footer>
         <dialog
           ref={element => (this.dialog = element)}
+          onClose={() => this.detailController?.abort()}
           onClick={event => {
             if (event.target === this.dialog) this.dialog.close();
           }}
@@ -283,12 +391,15 @@ export class CineflixApp {
                 <span class="eyebrow">THE CINEFLIX COLLECTION</span>
                 <h2>{this.selected.title}</h2>
                 <p class="detail-meta">
-                  ★ {this.selected.rating} · {this.selected.year} · {this.selected.duration} · {this.selected.genre}
+                  ★ {this.selected.rating.toFixed(1)} · {this.selected.year || 'Release date TBA'} {this.selected.duration && `· ${this.selected.duration}`} · {this.selected.genre}
                 </p>
                 <p>{this.selected.overview}</p>
-                <p class="director">
-                  Directed by <strong>{this.selected.director}</strong>
-                </p>
+                {this.selected.director && (
+                  <p class="director">
+                    Directed by <strong>{this.selected.director}</strong>
+                  </p>
+                )}
+                {this.detailsError && <p role="status">{this.detailsError}</p>}
                 <button class="primary" onClick={() => this.toggleSave(this.selected.id)}>
                   {this.saved.includes(this.selected.id) ? '✓ Saved to watchlist' : '+ Add to watchlist'}
                 </button>

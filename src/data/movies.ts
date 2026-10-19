@@ -1,5 +1,7 @@
 export interface Movie {
   id: number;
+  tmdbId?: number;
+  genres?: string[];
   title: string;
   year: number;
   genre: string;
