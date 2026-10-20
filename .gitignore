@@ -42,3 +42,6 @@ service-account*.json
 coverage/
 test-results/
 playwright-report/
+
+# Generated dependency audit reports and local notification baseline
+/reports/

@@ -43,3 +43,8 @@ API tests mock TMDB to verify validation, credential isolation, response mapping
 Tests use a locally installed Chrome on macOS/Linux, or `CHROME_PATH` if provided. If Chrome is unavailable, install Puppeteer's browser with `npx puppeteer browsers install chrome`.
 
 Source: https://github.com/iseto/wc-cineflix
+
+## Automated dependency maintenance
+
+Weekly Dependabot updates and daily full dependency audits are configured.
+See [automation schedules and notification behavior](docs/AUTOMATIONS.md).
