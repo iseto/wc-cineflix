@@ -8,8 +8,8 @@
     "TMDB API"
   ],
   "descriptions": {
-    "en": "A film discovery app with a curated collection, live TMDB title search, genre filters, sorting, a saved watchlist, and film details.",
-    "de": "Eine Film-App mit kuratierter Sammlung, Live-Titelsuche über TMDB, Genrefiltern, Sortierung, gespeicherter Merkliste und Filmdetails.",
-    "id": "Aplikasi penemuan film dengan koleksi kurasi, pencarian judul langsung melalui TMDB, filter genre, pengurutan, daftar tontonan tersimpan, dan detail film."
+    "en": "A film discovery app with a curated collection, live TMDB title search, genre filters, sorting, a saved watchlist, and film details. System, light/dark themes, and increased contrast.",
+    "de": "Eine Film-App mit kuratierter Sammlung, Live-Titelsuche über TMDB, Genrefiltern, Sortierung, gespeicherter Merkliste und Filmdetails. Mit Systemmodus, hellem/dunklem Design und erhöhtem Kontrast.",
+    "id": "Aplikasi penemuan film dengan koleksi kurasi, pencarian judul langsung melalui TMDB, filter genre, pengurutan, daftar tontonan tersimpan, dan detail film. Dengan tema sistem, terang/gelap, dan kontras lebih tinggi."
   }
 }

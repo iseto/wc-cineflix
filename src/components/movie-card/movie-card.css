@@ -100,7 +100,7 @@ button {
 .save.saved {
   background: #d4ed90;
   color: #182014;
-  border-color: #d4ed90;
+  border-color: var(--accent, #d4ed90);
 }
 .title {
   border: 0;
@@ -114,7 +114,7 @@ button {
   display: block;
 }
 .title:hover {
-  color: #d4ed90;
+  color: var(--accent, #d4ed90);
 }
 p {
   font-size: 11px;
@@ -125,7 +125,7 @@ p span {
   margin: 0 8px;
 }
 :focus-visible {
-  outline: 2px solid #d4ed90;
+  outline: 3px solid var(--accent, #d4ed90);
   outline-offset: 3px;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -135,3 +135,14 @@ p span {
 }
 
 @media (max-width: 700px) { .save { width: 40px; height: 40px; top: 8px; right: 8px; } }
+
+/* Poster overlays remain opaque enough to read regardless of the surrounding theme. */
+.rating, .save { background: #111b12; }
+.view { background: #111b12; }
+.rating span { color: #d4ed90; }
+@media (forced-colors: active) {
+ .save, .rating { border: 1px solid ButtonText; background: ButtonFace; color: ButtonText; }
+ .save.saved { outline: 2px solid Highlight; }
+ .artwork { border: 1px solid CanvasText; }
+ .title:focus-visible, .poster:focus-visible { outline: 3px solid Highlight; }
+}

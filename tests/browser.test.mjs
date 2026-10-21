@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { resolve, extname, sep } from 'node:path';
 import puppeteer from 'puppeteer';
+import axe from 'axe-core';
 
 // Test the real compiled components, including events across Shadow DOM boundaries.
 test('film discovery, watchlist persistence, dialogs, keyboard and responsive layouts', async () => {
@@ -119,13 +120,53 @@ test('film discovery, watchlist persistence, dialogs, keyboard and responsive la
     await page.click('cineflix-app >>> .filters button:nth-child(2)');
     await page.waitForFunction(() => document.querySelector('cineflix-app').shadowRoot.querySelectorAll('wc-movie-card').length === 3);
     assert.equal(await app(), 3);
-    await page.select('cineflix-app >>> select', 'rating');
+    await page.select('cineflix-app >>> select[aria-label="Sort films"]', 'rating');
     await page.waitForFunction(() => document.querySelector('cineflix-app').shadowRoot.querySelector('wc-movie-card').movie.title === 'Interstellar');
     await page.click('cineflix-app >>> .filters button:first-child');
     for (const width of [1440, 768, 390, 320]) {
       await page.setViewport({ width, height: 1000 });
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `No overflow at ${width}px`);
     }
+    // Theme changes must not rebuild components or clear the saved watchlist.
+    const savedBefore = await page.evaluate(() => localStorage.getItem('cineflix-watchlist'));
+    const session = await page.createCDPSession();
+    for (const theme of ['light', 'dark']) for (const contrast of ['standard', 'more']) {
+      await page.select('cineflix-app >>> select[aria-label="Color theme"]', theme);
+      await page.select('cineflix-app >>> select[aria-label="Contrast"]', contrast);
+      await page.waitForFunction((theme, contrast) => document.documentElement.dataset.theme === theme && document.documentElement.dataset.contrast === contrast, {}, theme, contrast);
+      assert.equal(await app(), 12);
+      assert.equal(await page.evaluate(() => localStorage.getItem('cineflix-watchlist')), savedBefore);
+      const heroText = await page.evaluate(() => getComputedStyle(document.querySelector('cineflix-app').shadowRoot.querySelector('.hero h2')).color);
+      assert.ok(['rgb(240, 241, 235)', 'rgb(255, 255, 255)'].includes(heroText), `${theme}/${contrast}: hero text stays readable over its dark image`);
+
+      await page.addScriptTag({ content: axe.source });
+      const violations = await page.evaluate(async contrast => {
+        const options = contrast === 'more' ? { runOnly: { type: 'rule', values: ['color-contrast-enhanced'] } } : { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa'] } };
+        const result = await window.axe.run(document, options);
+        return result.violations.map(item => ({ id: item.id, nodes: item.nodes.map(node => node.failureSummary) }));
+      }, contrast);
+      assert.deepEqual(violations, [], `${theme}/${contrast}: accessible color contrast across Shadow DOM`);
+
+      for (const width of [320, 390, 1440]) {
+        await page.setViewport({ width, height: 1000 });
+        assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `${theme}/${contrast} at ${width}px`);
+      }
+      await page.click('cineflix-app >>> wc-movie-card >>> .title');
+      assert.equal(await page.evaluate(() => document.querySelector('cineflix-app').shadowRoot.querySelector('dialog').open), true);
+      await page.keyboard.press('Escape');
+    }
+    await page.reload({ waitUntil: 'networkidle2' });
+    assert.equal(await page.evaluate(() => document.documentElement.dataset.theme), 'dark');
+    assert.equal(await page.evaluate(() => document.documentElement.dataset.contrast), 'more');
+    await page.select('cineflix-app >>> select[aria-label="Color theme"]', 'system');
+    await page.select('cineflix-app >>> select[aria-label="Contrast"]', 'system');
+    await session.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: 'light' }, { name: 'prefers-contrast', value: 'more' }] });
+    await page.waitForFunction(() => document.documentElement.dataset.theme === 'light' && document.documentElement.dataset.contrast === 'more');
+    await session.send('Emulation.setEmulatedMedia', { features: [{ name: 'forced-colors', value: 'active' }] });
+    assert.equal(await app(), 12);
+    await page.click('cineflix-app >>> wc-movie-card >>> .save');
+    await page.waitForFunction(() => JSON.parse(localStorage.getItem('cineflix-watchlist')).length === 0);
+    await session.send('Emulation.setEmulatedMedia', { features: [] });
     await page.setViewport({ width: 1440, height: 1100 });
     await page.screenshot({ path: '/tmp/cineflix-desktop.png', fullPage: true });
     await page.setViewport({ width: 390, height: 844 });
