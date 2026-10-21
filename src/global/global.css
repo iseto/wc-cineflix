@@ -1,7 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
 :root {
-  color-scheme: dark;
-  background: #101310;
+  --cine-bg: #f6f8f0; --cine-panel: #ffffff; --cine-raised: #e5eddc;
+  --cine-text: #192c20; --cine-muted: #4d6145; --cine-accent: #2a502c;
+  --cine-border: #73866a; --cine-on-accent: #ffffff;
+  background: var(--cine-bg);
   font-family: 'Manrope', Arial, sans-serif;
 }
 body {
@@ -21,4 +23,20 @@ html {
   html {
     scroll-behavior: auto;
   }
+}
+
+:root[data-theme="dark"] {
+ --cine-bg: #101310; --cine-panel: #171f18; --cine-raised: #293827;
+ --cine-text: #f0f1eb; --cine-muted: #acb9a2; --cine-accent: #d6edaa;
+ --cine-border: #7e9271; --cine-on-accent: #172510;
+}
+:root[data-contrast="more"] {
+ --cine-bg: #ffffff; --cine-panel: #ffffff; --cine-raised: #edf5e7;
+ --cine-text: #08120a; --cine-muted: #20391b; --cine-accent: #173c16;
+ --cine-border: #29482a;
+}
+:root[data-theme="dark"][data-contrast="more"] {
+ --cine-bg: #040905; --cine-panel: #0b160c; --cine-raised: #1a2d17;
+ --cine-text: #ffffff; --cine-muted: #e0f0d3; --cine-accent: #d6ffac;
+ --cine-border: #c5e1b3;
 }

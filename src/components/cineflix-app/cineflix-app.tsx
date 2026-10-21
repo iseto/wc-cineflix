@@ -1,9 +1,16 @@
 import { Component, Element, h, Listen, State } from '@stencil/core';
+import { createAppearance, initialAppearance, type Appearance, type ThemePreference, type ContrastPreference } from '../../utils/appearance';
 import { Movie, movies } from '../../data/movies';
 
 @Component({ tag: 'cineflix-app', styleUrl: 'cineflix-app.css', shadow: true })
 export class CineflixApp {
   @Element() host: HTMLElement;
+  @State() appearance: Appearance = initialAppearance;
+  @State() appearanceNotice = '';
+  private appearanceController: ReturnType<typeof createAppearance>;
+  connectedCallback() {
+    this.appearanceController = createAppearance('cineflix', value => { this.appearance = value; });
+  }
   @State() view = 'discover';
   @State() genre = 'All films';
   @State() query = '';
@@ -59,6 +66,7 @@ export class CineflixApp {
     if (event.key === 'Escape') this.inspector = false;
   }
   disconnectedCallback() {
+    this.appearanceController?.destroy();
     clearTimeout(this.toastTimer);
     clearTimeout(this.searchTimer);
     this.searchController?.abort();
@@ -161,7 +169,7 @@ export class CineflixApp {
     if (this.sort === 'newest') visible = [...visible].sort((a, b) => b.year - a.year);
     if (this.sort === 'title') visible = [...visible].sort((a, b) => a.title.localeCompare(b.title));
     return (
-      <div class="app">
+      <div class="app" data-contrast={this.appearance.resolvedContrast}>
         <a href="#collection" class="skip">
           Skip to films
         </a>
@@ -185,6 +193,19 @@ export class CineflixApp {
             <span>Built with web components</span>
             <span class="status-dot"></span>
           </button>
+          <div class="appearance-controls" role="group" aria-label="Appearance">
+            <label><span>Color theme</span><select aria-label="Color theme" onChange={event => {
+              this.appearanceNotice = this.appearanceController.changeTheme((event.target as HTMLSelectElement).value as ThemePreference) ? '' : 'Appearance changed for this visit. Your browser could not save the preference.';
+            }}>
+              <option value="system" selected={this.appearance.theme === 'system'}>System</option><option value="light" selected={this.appearance.theme === 'light'}>Light</option><option value="dark" selected={this.appearance.theme === 'dark'}>Dark</option>
+            </select></label>
+            <label><span>Contrast</span><select aria-label="Contrast" onChange={event => {
+              this.appearanceNotice = this.appearanceController.changeContrast((event.target as HTMLSelectElement).value as ContrastPreference) ? '' : 'Appearance changed for this visit. Your browser could not save the preference.';
+            }}>
+              <option value="system" selected={this.appearance.contrast === 'system'}>System</option><option value="standard" selected={this.appearance.contrast === 'standard'}>Standard</option><option value="more" selected={this.appearance.contrast === 'more'}>More</option>
+            </select></label>
+            <span class="appearance-notice" role="status">{this.appearanceNotice}</span>
+          </div>
         </header>
         <main>
           <section class="intro">
