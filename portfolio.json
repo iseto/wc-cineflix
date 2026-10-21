@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "title": "Cineflix Web Component",
+  "stack": [
+    "StencilJS",
+    "TypeScript",
+    "Web Components",
+    "TMDB API"
+  ],
+  "descriptions": {
+    "en": "A film discovery app with a curated collection, live TMDB title search, genre filters, sorting, a saved watchlist, and film details.",
+    "de": "Eine Film-App mit kuratierter Sammlung, Live-Titelsuche über TMDB, Genrefiltern, Sortierung, gespeicherter Merkliste und Filmdetails.",
+    "id": "Aplikasi penemuan film dengan koleksi kurasi, pencarian judul langsung melalui TMDB, filter genre, pengurutan, daftar tontonan tersimpan, dan detail film."
+  }
+}
