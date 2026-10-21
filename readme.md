@@ -48,3 +48,7 @@ Source: https://github.com/iseto/wc-cineflix
 
 Weekly Dependabot updates and daily full dependency audits are configured.
 See [automation schedules and notification behavior](docs/AUTOMATIONS.md).
+
+## Portfolio listing
+
+`portfolio.json` supplies the title, technology tags, and English/German/Indonesian descriptions for [the portfolio landing page](https://github.com/iseto/portfolio-landing). Update it when shipping user-facing features. The landing page checks this file and the repository homepage hourly, validates all three translations and live links, and publishes verified changes automatically. Set the GitHub repository website to the canonical deployed demo URL. Screenshots and case-study evidence are maintained separately.
