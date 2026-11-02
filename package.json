@@ -26,9 +26,9 @@
     "@stencil/core": "^4.45.2"
   },
   "devDependencies": {
-    "@types/node": "^26.6.5",
+    "@types/node": "^26.6.6",
     "axe-core": "^4.14.0",
-    "puppeteer": "^25.13.0"
+    "puppeteer": "^25.16.0"
   },
   "license": "MIT",
   "engines": {
